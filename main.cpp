@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include <iomanip>
 
 using namespace std;
 vector<string> split(string s, string delimiter);
@@ -26,14 +27,36 @@ public:
         this->price = price;
     }
 
-    void show_car(){
-        cout << brand <<" "<< model <<" "<< body <<" "<< transmission <<" "<< passengers <<" "<< price << endl;
+    void show_car(int i){
+        cout << left << setw(2) << i+1 << ") " << left << setw(10) << brand <<" "<< left << setw(7) << model <<" "<< left << setw(10)<< body <<" "<< setw(2) << passengers <<" "<< price <<" " << endl;
     }
 
     void show_cars(vector<Car> cars){
         cout<<endl<<"Available cars:"<<endl;
         for(int i=0; i<cars.size(); i++)
-            cars[i].show_car();
+            cars[i].show_car(i);
+    }
+
+    void add_car(vector<Car> *cars) {
+        cout<<endl<<"Enter new car info:"<<endl;
+        cout<<"Brand: ";
+        cin>> brand;
+        cout<<"Model: ";
+        cin>> model;
+        cout<<"Body: ";
+        cin>> body;
+        cout<<"Transmission: ";
+        cin>> transmission;
+        cout<<"Passengers: ";
+        cin>> passengers;
+        cout<<"Price: ";
+        cin>>price;
+
+        ofstream out("CarSource.txt", std::ios::app);
+        out << brand << ", " << model << ", " << body << ", " << transmission << ", " << passengers << ", " << price <<endl;
+        out.close();
+
+        cars->emplace_back(Car(brand, model, body, transmission, passengers, price));
     }
 
     vector<Car> read_car() {
@@ -78,14 +101,34 @@ public:
         this->addres = addres;
     }
 
-    void show_client(){
-        cout << surname <<" "<< name <<" "<< year <<" "<< phone <<" "<< addres <<" " << endl;
+    void show_client(int i){
+        cout << left << setw(2) << i+1 << ") " << left << setw(10) << surname <<" "<< left << setw(7) << name <<" "<< year <<" "<< setw(11) << phone <<" "<< addres <<" " << endl;
     }
 
     void show_clients(vector<Client> clients){
         cout<<endl<<"All clients:"<<endl;
         for(int i=0; i<clients.size(); i++)
-            clients[i].show_client();
+            clients[i].show_client(i);
+    }
+
+    void add_client(vector<Client> *clients) {
+        cout<<endl<<"Enter new client's info:"<<endl;
+        cout<<"Surname: ";
+        cin>> surname;
+        cout<<"Name: ";
+        cin>> name;
+        cout<<"Year: ";
+        cin>> year;
+        cout<<"Phone: ";
+        cin>> phone;
+        cout<<"Addres: ";
+        cin>> addres;
+
+        ofstream out("ClientSource.txt", std::ios::app);
+        out << surname << ", " << name << ", " << year << ", " << phone << ", " << addres<<endl;
+        out.close();
+
+        clients->emplace_back(Client(surname, name, year, phone, addres));
     }
 
     vector<Client> read_clients() {
@@ -112,9 +155,8 @@ public:
 
 //---------------------------------------------------------------------------------------------------------------------------
 
-int main()
-{
-    int i=0;
+int main() {
+
     Car car;
     Client client;
     vector<Car> cars;
@@ -122,9 +164,15 @@ int main()
 
     cars = car.read_car();
     car.show_cars(cars);
-
     clients = client.read_clients();
     client.show_clients(clients);
+
+   // car.add_car(&cars);
+    //client.add_client(&clients);
+
+    //car.show_cars(cars);
+   // client.show_clients(clients);
+
 
     return 0;
 }
