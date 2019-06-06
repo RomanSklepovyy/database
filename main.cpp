@@ -28,7 +28,7 @@ public:
     }
 
     void show_car(int i){
-        cout << left << setw(2) << i+1 << ") " << left << setw(10) << brand <<" "<< left << setw(7) << model <<" "<< left << setw(10)<< body <<" "<< setw(2) << passengers <<" "<< price <<" " << endl;
+        cout << left << setw(2) << i+1 << ") " << left << setw(12) << brand <<" "<< left << setw(10) << model <<" "<< left << setw(10)<< body <<" "<< setw(4) << passengers <<" "<< price <<" " << endl;
     }
 
     void show_cars(vector<Car> cars){
@@ -102,7 +102,7 @@ public:
     }
 
     void show_client(int i){
-        cout << left << setw(2) << i+1 << ") " << left << setw(10) << surname <<" "<< left << setw(7) << name <<" "<< year <<" "<< setw(11) << phone <<" "<< addres <<" " << endl;
+        cout << left << setw(2) << i+1 << ") " << left << setw(12) << surname <<" "<< left << setw(10) << name <<" "<<setw(8) << year <<" "<< setw(14) << phone <<" "<< addres <<" " << endl;
     }
 
     void show_clients(vector<Client> clients){
@@ -151,6 +151,19 @@ public:
 
         return clients;
     }
+};
+
+//---------------------------------------------------------------------------------------------------------------------------
+
+class CarReadException : public exception {
+public:
+    CarReadException(char *msg, int n) : exception(msg)
+    {
+
+
+    }
+private:
+    int n;
 };
 
 //---------------------------------------------------------------------------------------------------------------------------
