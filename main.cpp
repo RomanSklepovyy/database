@@ -12,12 +12,19 @@ vector<string> split(string s, string delimiter);
 
 class SplitException : public exception {
 public:
+    SplitException(int line) {
+        this->line=line;
+    }
+
     virtual const char* what() const throw()
     {
-        return "\nError in file line!\n";
+        return "\nError in file line ";
     }
-private:
 
+    int get_line() { return line;}
+
+private:
+    int line;
 };
 
 //----------------------------------------------------------------
@@ -76,7 +83,7 @@ public:
 
     vector<Car> read_car() {
 
-        int i;
+        int i=0;
         string line;
         char charline[1024];
         vector<string> words;
@@ -85,8 +92,13 @@ public:
         ifstream in("CarSource.txt");
 
         while (getline(in, line)) {
+            i++;
             strcpy(charline, line.c_str());
             words = split(charline, ", ");
+
+            if(words.size()!=6)
+                throw SplitException(i);
+
             cars.push_back(Car(words[0], words[1], words[2], words[3], atoi(words[4].c_str()), atof(words[5].c_str())));
         }
 
@@ -148,7 +160,7 @@ public:
 
     vector<Client> read_clients() {
 
-        int i;
+        int i=0;
         string line;
         char charline[1024];
         vector<string> words;
@@ -157,12 +169,12 @@ public:
         ifstream in("ClientSource.txt");
 
         while (getline(in, line)) {
-
+            i++;
             strcpy(charline, line.c_str());
             words = split(charline, ", ");
 
             if(words.size()!=5)
-                throw;
+                throw SplitException(i);
 
             clients.emplace_back(Client(words[0], words[1], atoi(words[2].c_str()), words[3], words[4]));
         }
@@ -175,29 +187,29 @@ public:
 
 //---------------------------------------------------------------------------------------------------------------------------
 
-
-
-//-------------------------------------------------------------------------------------------------
-
 int main() {
 
     Car car;
     Client client;
     vector<Car> cars;
     vector<Client> clients;
+    bool exit = false;
 
-    cars = car.read_car();
-    car.show_cars(cars);
-    clients = client.read_clients();
-    client.show_clients(clients);
+    //enum {show_car, show_client, add_car, add_client, delete_car, delete_client} comamd;
 
-   // car.add_car(&cars);
-    //client.add_client(&clients);
+    while (!exit) {
+        try {
+            cars = car.read_car();
+        } catch (SplitException &e) {
+            cout << e.what() << e.get_line() << "!" << endl;
+        }
 
-    //car.show_cars(cars);
-   // client.show_clients(clients);
-
-
+        try {
+            clients = client.read_clients();
+        } catch (SplitException &e) {
+            cout << e.what() << e.get_line() << "!" << endl;
+        }
+    }
     return 0;
 }
 
