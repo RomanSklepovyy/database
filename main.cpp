@@ -50,7 +50,7 @@ public:
     }
 
     void show_car(int i){
-        cout << left << setw(2) << i+1 << ") " << left << setw(10) << brand <<" "<< left << setw(7) << model <<" "<< left << setw(10)<< body <<" "<< setw(2) << passengers <<" "<< price <<" " << endl;
+        cout << left << setw(2) << i+1 << ") " << left << setw(10) << brand <<" "<< left << setw(7) << model <<" "<< left << setw(10)<< body <<" "<<left << setw(7) << transmission << setw(2) << passengers <<" "<< price <<" " << endl;
     }
 
     void show_cars(vector<Car> cars){
@@ -60,7 +60,9 @@ public:
     }
 
     void add_car(vector<Car> *cars) {
-        cout<<endl<<"Enter new car info:"<<endl;
+        string s;
+
+        cout<<endl<<"Enter new car info: "<<endl;
         cout<<"Brand: ";
         cin>> brand;
         cout<<"Model: ";
@@ -73,12 +75,18 @@ public:
         cin>> passengers;
         cout<<"Price: ";
         cin>>price;
+        getline(cin,s);
 
         ofstream out("CarSource.txt", std::ios::app);
         out << brand << ", " << model << ", " << body << ", " << transmission << ", " << passengers << ", " << price <<endl;
         out.close();
 
         cars->emplace_back(Car(brand, model, body, transmission, passengers, price));
+        cout<<"Car added succesfully!";
+        cout<<endl;
+
+
+
     }
 
     vector<Car> read_car() {
@@ -149,13 +157,16 @@ public:
         cout<<"Phone: ";
         cin>> phone;
         cout<<"Addres: ";
-        cin>> addres;
+        getline(cin, addres);
+        getline(cin, addres);
 
         ofstream out("ClientSource.txt", std::ios::app);
         out << surname << ", " << name << ", " << year << ", " << phone << ", " << addres<<endl;
         out.close();
 
         clients->emplace_back(Client(surname, name, year, phone, addres));
+        cout<<"Client added succesfully!";
+        cout<<endl;
     }
 
     vector<Client> read_clients() {
@@ -195,21 +206,74 @@ int main() {
     vector<Client> clients;
     bool exit = false;
 
-    //enum {show_car, show_client, add_car, add_client, delete_car, delete_client} comamd;
+    enum {show_car, show_client, add_car, add_client, delete_car, delete_client, exit_program, error_input} command;
+
+    try {
+        cars = car.read_car();
+    } catch (SplitException &e) {
+        cout << e.what() << e.get_line() << "!" << endl;
+    }
+
+    try {
+        clients = client.read_clients();
+    } catch (SplitException &e) {
+        cout << e.what() << e.get_line() << "!" << endl;
+    }
+
+    cout<<"All commands: show cars, show clients, add car, add client, delete car, delete client, exit"<<endl;
 
     while (!exit) {
-        try {
-            cars = car.read_car();
-        } catch (SplitException &e) {
-            cout << e.what() << e.get_line() << "!" << endl;
-        }
+        string input_command;
+        cout<<"\nEnter your command: ";
+        getline(cin, input_command);
 
-        try {
-            clients = client.read_clients();
-        } catch (SplitException &e) {
-            cout << e.what() << e.get_line() << "!" << endl;
+
+        if (input_command=="show cars")
+            command=show_car;
+        else if (input_command=="show clients")
+            command=show_client;
+        else if (input_command=="add car")
+            command=add_car;
+        else if (input_command=="add client")
+            command=add_client;
+        else if (input_command=="delete car")
+            command=delete_car;
+        else if (input_command=="delete client")
+            command=delete_client;
+        else if (input_command=="exit")
+            command=exit_program;
+        else command=error_input;
+
+        switch (command) {
+            case show_car :
+                car.show_cars(cars);
+                break;
+            case show_client:
+                client.show_clients(clients);
+                break;
+            case add_car:
+                car.add_car(&cars);
+                break;
+            case add_client:
+                client.add_client(&clients);
+                break;
+            case delete_car:
+                cout<<"\ndelete car\n";
+                break;
+            case delete_client:
+                cout<<"\ndelete client\n";
+                break;
+            case exit_program:
+                exit=true;
+                break;
+            default:
+                cout<<"\nPlease enter your command again!\n";
+                break;
         }
     }
+
+
+
     return 0;
 }
 
