@@ -4,6 +4,7 @@
 #include <string>
 #include <cstring>
 #include <iomanip>
+#include <time.h>
 
 using namespace std;
 vector<string> split(string s, string delimiter);
@@ -63,7 +64,10 @@ public:
     }
 
     void show_car(int i){
-        cout << left << setw(2) << i+1 << ") " << left << setw(10) << brand <<" "<< left << setw(7) << model <<" "<< left << setw(10)<< body <<" "<<left << setw(7) << transmission << setw(2) << passengers <<" "<< price <<" " << endl;
+        cout << left << setw(2) << i+1 << ") " << left << setw(10) << brand
+        <<" "<< left << setw(7) << model <<" "<< left << setw(10)<< body
+        <<" "<<left << setw(7) << transmission << setw(2) << passengers
+        <<" "<< price <<" " << endl;
     }
 
     void show_cars(vector<Car> cars){
@@ -267,8 +271,149 @@ public:
 
         return clients;
     }
+};
+//---------------------------------------------------------------------------------------------------------------------------
+
+class Order {
+private:
+    string client_surname;
+    string client_name;
+    string client_phone;
+    string car_brand;
+    string car_model;
+    string time_created;
+    int days;
+    double pay;
+
+public:
+    string getClientSurname()  {return client_surname;}
+    string getClientName()  {return client_name;}
+    string getClientPhone()  {return client_phone;}
+    string getCarBrand()  {return car_brand;}
+    string getCarModel()  {return car_model;}
+    string getTimeCreated()  {return time_created;}
+    int getDays()  {return days;}
+    double getPay()  {return pay;}
+
+    Order() {};
+
+    Order(Client client, Car car, int days) {
+        client_surname = client.getSurname();
+        client_name = client.getName();
+        client_phone = client.getPhone();
+        car_brand = car.getBrand();
+        car_model = car.getModel();
+        time_t t=time(NULL);
+        time_created=ctime(&t);
+        this->days=days;
+        pay=car.getPrice()*days;
+    }
+
+    Order(string client_surname, string client_name, string client_phone,string car_brand,
+            string car_model, string time_created, int days, double pay){
+
+        this->client_surname = client_surname;
+        this->client_name =  client_name;
+        this->client_phone =  client_phone;
+        this->car_brand =  car_brand;
+        this->car_model =  car_model;
+        this->time_created =  time_created;
+        this->days =  days;
+        this->pay =  pay;
+    }
+
+    void show_order(int i){
+        cout << left << setw(2) << i+1 << ") " << left << setw(10) << client_surname
+             << " " << left << setw(10) << client_name<<" " << left <<" "<< setw(14) << client_phone
+             << " " << left << setw(10) << car_brand<< " " << left << setw(10) << car_model
+             << " " << setw(27) << time_created << " " << setw(4) << days << " " << setw(6) << pay << endl;
+    }
+
+    void show_orders(vector<Order> orders){
+        cout<<endl<<"All orders:"<<endl;
+        for(int i=0; i<orders.size(); i++)
+            orders[i].show_order(i);
+    }
+
+    void add_order(vector<Order> *orders, vector<Car> cars, vector<Client> clients) {
+
+        int client_id, car_id, order_days;
+        string s;
+
+        cout<<endl<<"Enter new order info:"<<endl;
+        cout<<"ID of client: ";
+        cin>> client_id;
+        cout<<"ID of car: ";
+        cin>> car_id;
+        cout<<"Days: ";
+        cin>> order_days;
+        getline(cin, s);
+
+        Order order(clients[client_id-1],cars[car_id-1],order_days);
+        orders->emplace_back(order);
+        s = order.getTimeCreated().substr(0, order.getTimeCreated().size()-1);
+
+        ofstream out("OrderSource.txt", std::ios::app);
+        out <<order.getClientSurname()<< ", " << order.getClientName()
+        << ", "<< order.getClientPhone() << ", " << order.getCarBrand()
+        << ", "<< order.getCarModel() << ", " << s
+        <<", " << order.getDays() << ", "<< order.getPay() <<endl;
+        out.close();
 
 
+        cout<<"\nClient added succesfully!";
+        cout<<endl;
+    }
+
+    vector<Order> delete_order(vector<Order> orders){
+        int id;
+        string s;
+        cout<<"\nEnter order id:";
+        cin>>id;
+        getline(cin, s);
+        if (id<=orders.size()) {
+            orders.erase(orders.begin() + (id - 1));
+
+            ofstream out("OrderSource.txt");
+            for (int i = 0; i < orders.size(); i++)
+                out <<orders[i].getClientSurname()<< ", " << orders[i].getClientName()
+                    << ", "<< orders[i].getClientPhone() << ", " << orders[i].getCarBrand()
+                    << ", "<< orders[i].getCarModel() << ", " << orders[i].getTimeCreated()
+                    <<", " << orders[i].getDays() << ", "<< orders[i].getPay() <<endl;
+            out.close();
+
+
+            out.close();
+            cout << "\nOrder successfully deleted!"<<endl;
+        } else cout <<"Error id!"<<endl;
+        return orders;
+    }
+
+    vector<Order> read_orders() {
+
+        int i=0;
+        string line;
+        char charline[1024];
+        vector<string> words;
+        vector<Order> orders;
+
+        ifstream in("OrderSource.txt");
+
+        while (getline(in, line)) {
+            i++;
+            strcpy(charline, line.c_str());
+            words = split(charline, ", ");
+
+            if(words.size()!=8)
+                throw SplitException(i, "order file");
+
+            orders.emplace_back(Order(words[0], words[1], words[2], words[3], words[4], words[5], atoi(words[6].c_str()), atof(words[7].c_str())));
+        }
+
+        in.close();
+
+        return orders;
+    }
 };
 
 //---------------------------------------------------------------------------------------------------------------------------
@@ -277,11 +422,14 @@ int main() {
 
     Car car;
     Client client;
+    Order order;
     vector<Car> cars;
     vector<Client> clients;
+    vector<Order> orders;
     bool exit = false;
 
-    enum {show_car, show_client, add_car, add_client, delete_car, delete_client, exit_program, error_input} command;
+    enum {show_car, show_client, add_car, add_client, delete_car, delete_client,
+            show_orders, make_order, delete_order, exit_program, error_input} command;
 
     try {
         cars = car.read_car();
@@ -297,8 +445,17 @@ int main() {
         exit=true;
     }
 
+    try {
+        orders = order.read_orders();
+    } catch (SplitException &e) {
+        cout << e.what() << e.get_line() << "!" << endl;
+        exit=true;
+    }
+
     if(!exit)
-        cout<<"All commands: show cars, show clients, add car, add client, delete car, delete client, exit"<<endl;
+        cout<<"All commands: \nshow cars, add car, delete car,"
+              "\nshow clients, add client, delete client, "
+              "\nshow orders, make order, delete order, exit"<<endl;
 
     while (!exit) {
         string input_command;
@@ -317,6 +474,12 @@ int main() {
             command=delete_car;
         else if (input_command=="delete client")
             command=delete_client;
+        else if (input_command=="show orders")
+            command=show_orders;
+        else if (input_command=="make order")
+            command=make_order;
+        else if (input_command=="delete order")
+            command=delete_order;
         else if (input_command=="exit")
             command=exit_program;
         else command=error_input;
@@ -339,6 +502,15 @@ int main() {
                 break;
             case delete_client:
                 clients = client.delete_client(clients);
+                break;
+            case show_orders:
+                order.show_orders(orders);
+                break;
+            case make_order:
+                order.add_order(&orders, cars, clients);
+                break;
+            case delete_order:
+                orders=order.delete_order(orders);
                 break;
             case exit_program:
                 exit=true;
