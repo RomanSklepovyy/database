@@ -12,19 +12,21 @@ vector<string> split(string s, string delimiter);
 
 class SplitException : public exception {
 public:
-    SplitException(int line) {
+    SplitException(int line, string file_name) {
         this->line=line;
+        this->file_name=file_name;
     }
 
-    virtual const char* what() const throw()
+    string what()
     {
-        return "\nError in file line ";
+        return "Error in "+file_name+" in line: ";
     }
 
     int get_line() { return line;}
 
 private:
     int line;
+    string file_name;
 };
 
 //----------------------------------------------------------------
@@ -37,15 +39,13 @@ private:
     string transmission;
     int passengers;
     double price;
+
 public:
 
     string getBrand() const {return brand;}
-
     string getModel() const {return model;}
-
-     string getBody() const {return body;}
-
-     string getTransmission() const {return transmission;}
+    string getBody() const {return body;}
+    string getTransmission() const {return transmission;}
 
     int getPassengers()  {return passengers;}
 
@@ -108,7 +108,7 @@ public:
         if (id<=cars.size()) {
             cars.erase(cars.begin() + (id - 1));
 
-            ofstream out("ClientSource.txt");
+            ofstream out("CarSource.txt");
             for (int i = 0; i < cars.size(); i++)
                 out << cars[i].getBrand() << ", " << cars[i].getModel() << ", " << cars[i].getBody() << ", "<< cars[i].getTransmission() << ", "
                     << cars[i].getPassengers() << ", " << cars[i].getPrice() << endl;
@@ -135,7 +135,7 @@ public:
             words = split(charline, ", ");
 
             if(words.size()!=6)
-                throw SplitException(i);
+                throw SplitException(i, "car file");
 
             cars.push_back(Car(words[0], words[1], words[2], words[3], atoi(words[4].c_str()), atof(words[5].c_str())));
         }
@@ -152,34 +152,40 @@ class Client {
 private:
     string surname;
     string name;
+    string lastname;
     int year;
     string phone;
     string addres;
+    string password;
 
 public:
 
-    string getSurname() const {return surname;}
+    string getSurname() {return surname;}
+    string getName() {return name;}
+    string getLastname() {return lastname;}
+    int getYear() {return year;}
+    string getPhone() {return phone;}
+    string getAddres() {return addres;}
+    string getPassword() {return password;}
 
-     string getName() const {return name;}
-
-    int getYear() const {return year;}
-
-   string getPhone() const {return phone;}
-
-    string getAddres() const {return addres;}
 
     Client() {}
 
-    Client(string surname, string name, int year, string phone, string addres) {
+    Client(string surname, string name, string lastname, int year, string phone, string addres, string password) {
         this->surname = surname;
         this->name = name;
+        this->lastname = lastname;
         this->year = year;
         this->phone = phone;
         this->addres = addres;
+        this->password = password;
     }
 
     void show_client(int i){
-        cout << left << setw(2) << i+1 << ") " << left << setw(10) << surname <<" "<< left << setw(7) << name <<" "<< year <<" "<< setw(11) << phone <<" "<< addres <<" " << endl;
+        cout << left << setw(2) << i+1 << ") " << left << setw(10) << surname
+        <<" "<< left << setw(7) << name <<" "<<left << setw(12) << lastname
+        <<" "<< left << setw(6) << year <<" "<< setw(12) << phone
+        <<" "<< left << setw(20) << addres <<" "<< password << endl;
     }
 
     void show_clients(vector<Client> clients){
@@ -194,19 +200,23 @@ public:
         cin>> surname;
         cout<<"Name: ";
         cin>> name;
+        cout<<"Lastname: ";
+        cin>> lastname;
         cout<<"Year: ";
         cin>> year;
         cout<<"Phone: ";
         cin>> phone;
         cout<<"Addres: ";
+        cout<<"Password: ";
+        cin>> password;
         getline(cin, addres);
         getline(cin, addres);
 
         ofstream out("ClientSource.txt", std::ios::app);
-        out << surname << ", " << name << ", " << year << ", " << phone << ", " << addres<<endl;
+        out << surname << ", " << name << ", " << lastname << ", " << year << ", " << phone << ", " << addres <<", " << password <<endl;
         out.close();
 
-        clients->emplace_back(Client(surname, name, year, phone, addres));
+        clients->emplace_back(Client(surname, name, lastname, year, phone, addres, password));
         cout<<"\nClient added succesfully!";
         cout<<endl;
     }
@@ -222,8 +232,9 @@ public:
 
             ofstream out("ClientSource.txt");
             for (int i = 0; i < clients.size(); i++)
-                out << clients[i].getSurname() << ", " << clients[i].getName() << ", " << clients[i].getYear() << ", "
-                    << clients[i].getPhone() << ", " << clients[i].getAddres() << endl;
+                out << clients[i].getSurname() << ", " << clients[i].getName() << ", "<< clients[i].getLastname()
+                << ", "<< clients[i].getYear() << ", "<< clients[i].getPhone() << ", "
+                << clients[i].getAddres() << ", " << clients[i].getPassword() << endl;
 
             out.close();
             cout << "\nClient successfully deleted!"<<endl;
@@ -246,10 +257,10 @@ public:
             strcpy(charline, line.c_str());
             words = split(charline, ", ");
 
-            if(words.size()!=5)
-                throw SplitException(i);
+            if(words.size()!=7)
+                throw SplitException(i, "client file");
 
-            clients.emplace_back(Client(words[0], words[1], atoi(words[2].c_str()), words[3], words[4]));
+            clients.emplace_back(Client(words[0], words[1], words[2], atoi(words[3].c_str()), words[4], words[5], words[6]));
         }
 
         in.close();
@@ -276,15 +287,18 @@ int main() {
         cars = car.read_car();
     } catch (SplitException &e) {
         cout << e.what() << e.get_line() << "!" << endl;
+        exit=true;
     }
 
     try {
         clients = client.read_clients();
     } catch (SplitException &e) {
         cout << e.what() << e.get_line() << "!" << endl;
+        exit=true;
     }
 
-    cout<<"All commands: show cars, show clients, add car, add client, delete car, delete client, exit"<<endl;
+    if(!exit)
+        cout<<"All commands: show cars, show clients, add car, add client, delete car, delete client, exit"<<endl;
 
     while (!exit) {
         string input_command;
@@ -321,7 +335,7 @@ int main() {
                 client.add_client(&clients);
                 break;
             case delete_car:
-                cars=car.delete_cars(cars);s
+                cars=car.delete_cars(cars);
                 break;
             case delete_client:
                 clients = client.delete_client(clients);
