@@ -38,6 +38,19 @@ private:
     int passengers;
     double price;
 public:
+
+    string getBrand() const {return brand;}
+
+    string getModel() const {return model;}
+
+     string getBody() const {return body;}
+
+     string getTransmission() const {return transmission;}
+
+    int getPassengers()  {return passengers;}
+
+    double getPrice() {return price;}
+
     Car() {}
 
     Car(string brand, string model, string body, string transmission, int passengers, double price) {
@@ -82,11 +95,28 @@ public:
         out.close();
 
         cars->emplace_back(Car(brand, model, body, transmission, passengers, price));
-        cout<<"Car added succesfully!";
+        cout<<"Car added successfully!";
         cout<<endl;
+    }
 
+    vector<Car> delete_cars(vector<Car> cars){
+        int id;
+        string s;
+        cout<<"\nEnter car's id:";
+        cin>>id;
+        getline(cin, s);
+        if (id<=cars.size()) {
+            cars.erase(cars.begin() + (id - 1));
 
+            ofstream out("ClientSource.txt");
+            for (int i = 0; i < cars.size(); i++)
+                out << cars[i].getBrand() << ", " << cars[i].getModel() << ", " << cars[i].getBody() << ", "<< cars[i].getTransmission() << ", "
+                    << cars[i].getPassengers() << ", " << cars[i].getPrice() << endl;
 
+            out.close();
+            cout << "\nCar successfully deleted!"<<endl;
+        } else cout <<"Error id!"<<endl;
+        return cars;
     }
 
     vector<Car> read_car() {
@@ -125,7 +155,19 @@ private:
     int year;
     string phone;
     string addres;
+
 public:
+
+    string getSurname() const {return surname;}
+
+     string getName() const {return name;}
+
+    int getYear() const {return year;}
+
+   string getPhone() const {return phone;}
+
+    string getAddres() const {return addres;}
+
     Client() {}
 
     Client(string surname, string name, int year, string phone, string addres) {
@@ -165,8 +207,28 @@ public:
         out.close();
 
         clients->emplace_back(Client(surname, name, year, phone, addres));
-        cout<<"Client added succesfully!";
+        cout<<"\nClient added succesfully!";
         cout<<endl;
+    }
+
+    vector<Client> delete_client(vector<Client> clients){
+        int id;
+        string s;
+        cout<<"\nEnter client's id:";
+        cin>>id;
+        getline(cin, s);
+        if (id<=clients.size()) {
+            clients.erase(clients.begin() + (id - 1));
+
+            ofstream out("ClientSource.txt");
+            for (int i = 0; i < clients.size(); i++)
+                out << clients[i].getSurname() << ", " << clients[i].getName() << ", " << clients[i].getYear() << ", "
+                    << clients[i].getPhone() << ", " << clients[i].getAddres() << endl;
+
+            out.close();
+            cout << "\nClient successfully deleted!"<<endl;
+        } else cout <<"Error id!"<<endl;
+        return clients;
     }
 
     vector<Client> read_clients() {
@@ -194,6 +256,8 @@ public:
 
         return clients;
     }
+
+
 };
 
 //---------------------------------------------------------------------------------------------------------------------------
@@ -227,7 +291,6 @@ int main() {
         cout<<"\nEnter your command: ";
         getline(cin, input_command);
 
-
         if (input_command=="show cars")
             command=show_car;
         else if (input_command=="show clients")
@@ -258,10 +321,10 @@ int main() {
                 client.add_client(&clients);
                 break;
             case delete_car:
-                cout<<"\ndelete car\n";
+                cars=car.delete_cars(cars);s
                 break;
             case delete_client:
-                cout<<"\ndelete client\n";
+                clients = client.delete_client(clients);
                 break;
             case exit_program:
                 exit=true;
@@ -272,15 +335,8 @@ int main() {
         }
     }
 
-
-
     return 0;
 }
-
-
-
-
-
 
 
 vector<string> split(string s, string delimiter) {
