@@ -1,22 +1,10 @@
-RENAULT, Scenic, sedan, MKPP, 5, 22.00
-RENAULT, Megan, sedan, MKPP, 4, 25.00
-RENAULT, Megan, sedan, MKPP, 4, 25.00
-RENAULT, Megan, sedan, MKPP, 4, 25.00
-RENAULT, Megan, sedan, MKPP, 4, 25.00
-RENAULT, Megan, sedan, MKPP, 4, 25.00
-RENAULT, Megan, sedan, MKPP, 4, 25.00
-RENAULT, Megan, sedan, MKPP, 4, 25.00
-RENAULT, Megan, sedan, MKPP, 4, 25.00
-RENAULT, Megan, sedan, MKPP, 4, 25.00
-RENAULT, Megan, sedan, MKPP, 4, 25.00
-RENAULT, Megan, sedan, MKPP, 4, 25.00
-Toyota, Prius, sedan, MKPP, 4, 20
-Lada, Kalina, sedan, MKKP, 4, 15
-fiat, scudo, sedan, mkpp, 9, 25
-fiat, doblo, sedan, akpp, 6, 19
-nissan, togle, sedan, fkad, 4, 23
-dfsfd, hghg, ks, lfdl, 4, 0
-jgfjfgj, jfds, jdfj, jfd, 5, 9
-jfdjdf, fdfd, dffd, dffd, 3, 93
-dfsg, sdfg, dfgfgd, 32, 23, 92
-dasf, adsf, adsf, adfs, 3, 39
+Audi, 100, St Wagon, MT, 4, 19
+Volvo, XC60, crossover, AT, 5, 35
+Dodhe, Challenger, sedan, MT, 2, 107
+IVECO, Daily, mini truck, MT, 3, 90
+Lexus, GS, sedan, MT, 4, 25
+Scoda, Fabia, Hatchback, AT, 5, 34
+Fiat, Doblo, Minivan, MT, 8, 40
+Chery, Bonus, sedan, AT, 4, 18
+Scoda, Octavia, St Wagon, MT, 7,
+Spectre, R45, Coupe, MT, 2, 150
