@@ -65,7 +65,7 @@ public:
 
     void show_car(int i){
         cout << left << setw(2) << i+1 << ") " << left << setw(10) << brand
-        <<" "<< left << setw(7) << model <<" "<< left << setw(10)<< body
+        <<" "<< left << setw(11) << model <<" "<< left << setw(10)<< body
         <<" "<<left << setw(7) << transmission << setw(2) << passengers
         <<" "<< price <<" " << endl;
     }
@@ -187,9 +187,9 @@ public:
 
     void show_client(int i){
         cout << left << setw(2) << i+1 << ") " << left << setw(10) << surname
-        <<" "<< left << setw(7) << name <<" "<<left << setw(12) << lastname
-        <<" "<< left << setw(6) << year <<" "<< setw(12) << phone
-        <<" "<< left << setw(20) << addres <<" "<< password << endl;
+        <<" "<< left << setw(9) << name <<" "<<left << setw(13) << lastname
+        <<" "<< left << setw(6) << year <<" "<< setw(17) << phone
+        <<" "<< left << setw(37) << addres <<" : "<< password << endl;
     }
 
     void show_clients(vector<Client> clients){
@@ -324,9 +324,9 @@ public:
 
     void show_order(int i){
         cout << left << setw(2) << i+1 << ") " << left << setw(10) << client_surname
-             << " " << left << setw(10) << client_name<<" " << left <<" "<< setw(14) << client_phone
+             << " " << left << setw(9) << client_name<<" " << left <<" "<< setw(17) << client_phone
              << " " << left << setw(10) << car_brand<< " " << left << setw(10) << car_model
-             << " " << setw(27) << time_created << " " << setw(4) << days << " " << setw(6) << pay << endl;
+             << time_created << " " << right << setw(4) << days << " " << right << setw(6) << pay << endl;
     }
 
     void show_orders(vector<Order> orders){
@@ -431,21 +431,10 @@ int main() {
     enum {show_car, show_client, add_car, add_client, delete_car, delete_client,
             show_orders, make_order, delete_order, exit_program, error_input} command;
 
+
     try {
         cars = car.read_car();
-    } catch (SplitException &e) {
-        cout << e.what() << e.get_line() << "!" << endl;
-        exit=true;
-    }
-
-    try {
         clients = client.read_clients();
-    } catch (SplitException &e) {
-        cout << e.what() << e.get_line() << "!" << endl;
-        exit=true;
-    }
-
-    try {
         orders = order.read_orders();
     } catch (SplitException &e) {
         cout << e.what() << e.get_line() << "!" << endl;
